@@ -1,0 +1,8 @@
+
+THe ability to control media devices with a computer is very powerful.
+
+This can let programs like XBMC turn off the TV during shutdown, or adjust the volume with an iPhone app.
+
+THere are many IR blaster solutions out there, but they are over $20.  Using the ATMega8U2 MCU, it should be possible to create a USB IR blaster for around $10.
+
+The biggest negative is that this IC only comes in surface mount so a PCB will have to be made.
