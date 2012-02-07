@@ -1,7 +1,25 @@
 // Easy way, copy most of the USB code from the LUFA program
 // Hard way, read the USB spec and creat USB complient code from there
 
-#include <avr/atmega8u2.h>
+#include <avr/io.h>
+
+enum{
+	IN,
+	OUT
+}
+
+struct setup_packet{
+	char bmRequestType;
+	char bRequest;
+	short wValue;
+	short wIndex;
+	short wLength;
+}
+
+// Return Data Here
+char return_data[8];
+
+
 
 int main(){
 	// Setup Registers
@@ -23,6 +41,8 @@ void setup_packet(char * data){
 	switch(bRequest){
 		case 0: // GET_STATUS
 			// Set the IN packet data to 0x0000
+			UEDATX = 0x00;
+			UEDATX = 0x00;
 			// THis means the device is bus-powered and does not wakeup the computer
 			break;
 		case 1: // CLEAR_FEATURE
@@ -36,6 +56,7 @@ void setup_packet(char * data){
 			break;		
 		case 6: // GET_Descriptor ... Request a descriptor
 			// Type and Index are in wValue
+			send_descriptor(wValue);
 			// Set the In Packet to the requested descriptor
 			break;
 		case 7: // SET_DESCRIPTOR ... Descriptor is being sent to device
