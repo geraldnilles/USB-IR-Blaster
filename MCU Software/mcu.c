@@ -3,9 +3,20 @@
 
 #include <avr/io.h>
 
-enum{
-	IN,
-	OUT
+
+enum next_out {
+	LED_COMMAND,
+	ENDPOINT_DESCRIPTOR,
+	INTERFACE_DESCRIPTOR,
+	STRING_DESCRIPTOR,
+	ZERO_LENGTH_PACKET
+}
+enum next_in {
+	GET_STATUS,
+	ZERO_LENGTH_PACKET,
+	ENDPOINT_DESCRIPTOR,
+	INTERFACE_DESCRIPTOR,
+	STRING_DESCRIPTOR
 }
 
 struct setup_packet{
@@ -27,22 +38,24 @@ int main(){
 	// Setup LED PWM output to be 32kHz at 50% duty cycle
 }
 
-void USB_interrupt(){
 
-}
+void INTERRUPT_RXSTPI(){ // A SETUP Packet was received
 
-void setup_packet(char * data){
-	unsigned char bmRequestType = data[0];
-	unsigned char bRequest = data[1];
-	unsigned short wValue = data[2:3];
-	unsigned short wIndex = data[4:5];
-	unsigned short wLength = data[6:7];
+	// There will be 8 bytes in the USB buffer
+	// Each time the UEATX buffer is read, that byte is popped off the 
+	char bmRequestType = UEDAT0;
+	char bRequest = UEDAT0;
+	short wValue = (UEDAT0 << 8) | UEDAT0;
+	short wIndex = (UEDAT0 << 8) | UEDAT0;
+	short wLength = (UEDAT0 << 8) | UEDAT0;
+	
+	// At this point, the USB Enpoint Byte counter should be zero UEBCLX
 
-	switch(bRequest){
+	switch(bRequest){ // TODO  THis will need to look at the Request type too
 		case 0: // GET_STATUS
 			// Set the IN packet data to 0x0000
-			UEDATX = 0x00;
-			UEDATX = 0x00;
+			UEDAT0 = 0x00;
+			UEDAT0 = 0x00;
 			// THis means the device is bus-powered and does not wakeup the computer
 			break;
 		case 1: // CLEAR_FEATURE
@@ -71,6 +84,23 @@ void setup_packet(char * data){
 		default:
 			// Sent a 0 length packet if an in packet is requested
 	}
+	
+	// Clear the Interrupt
+	RXSTPI = 0;
 }
 
-// THis is an online edit
+
+void interrupt_RXOUTI(){ // An Out packet was received
+	// Look at the enum variables to see what we want to do with this info
+	// Read Register and Do shit (probably with functions)
+	// Clear the Interrupt
+	RXOUTI = 0;
+}
+
+void interrupt_TXINI(){ // An IN packet was received
+	// Look at the enum states to see what the host wants
+	// Fill the DATA buffer with data we want to send
+	// Clear the interrupt
+	TXINI = 0;
+}
+
