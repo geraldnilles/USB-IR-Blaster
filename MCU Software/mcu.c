@@ -16,7 +16,9 @@ enum next_in {
 	ZERO_LENGTH_PACKET,
 	ENDPOINT_DESCRIPTOR,
 	INTERFACE_DESCRIPTOR,
-	STRING_DESCRIPTOR
+	STRING_DESCRIPTOR_0,
+	STRING_DESCRIPTOR_1,
+	STRING_DESCRIPTOR_2
 }
 
 struct setup_packet{
@@ -27,9 +29,26 @@ struct setup_packet{
 	short wLength;
 }
 
-// Return Data Here
-char return_data[8];
+struct string_descriptor{
+	char * string;
+	char size;
+	char type = 0x03
+}
 
+// Create an array of string_descriptors
+struct string_descriptor [5] = string_array;
+
+enum string_index{
+	MANUFACTURER,
+	PRODUCT,
+	SERIALNUMBER,
+	CONFIGURATION,
+	INTERFACE,
+}
+
+string_array[MANUFACTURER].string = L"GERALD";
+string_array[MANUFACTURER].size = 8;
+// Repeat for each string_index 
 
 
 int main(){
@@ -91,6 +110,7 @@ void INTERRUPT_RXSTPI(){ // A SETUP Packet was received
 
 
 void interrupt_RXOUTI(){ // An Out packet was received
+	// Check Endpoint Number requested
 	// Look at the enum variables to see what we want to do with this info
 	// Read Register and Do shit (probably with functions)
 	// Clear the Interrupt
@@ -98,6 +118,34 @@ void interrupt_RXOUTI(){ // An Out packet was received
 }
 
 void interrupt_TXINI(){ // An IN packet was received
+	if(ENDPOINT == 0){ // Control Endpoint Selected
+		switch(next_in){
+			case GET_STATUS:
+
+			case ZERO_LENGTH_PACKET:
+ 			case ENDPOINT_DESCRIPTOR:
+			case INTERFACE_DESCRIPTOR:
+			case STRING_DESCRIPTOR_0:
+				UEADAT0 = 0x04; // THis Packet will be 4 bytes
+				UEADAT0 = 0x03; // This is a String Descriptor
+				UEADAT0 = 0x04; // THis string is english (pt 1)
+				UEADAT0 = 0x09; // THis string is english (pt 2)
+				break;
+			case STRING_DESCRIPTOR_1:
+				UEADAT0 = 0x07; // This packet will be 7 bytes long
+				UEADAT0 = 0x03; // THis is a string descriptor
+				UEADAT0 = u'U'; // Seind string in UNICODE
+				UEADAT0 = u'S';
+				UEADAT0 = u'B';
+				UEADAT0 = u'I';
+				UEADAT0 = u'R';
+			default:
+				// ZLP
+
+		}
+	} else { // LED Endpoint Selected
+		// THere are no IN commands for the LED drive so return ZLP
+	}
 	// Look at the enum states to see what the host wants
 	// Fill the DATA buffer with data we want to send
 	// Clear the interrupt

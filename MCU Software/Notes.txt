@@ -1,0 +1,133 @@
+This file will list all this shit my MCU code needs to support
+
+****************
+** Transactions
+****************
+CAPITAL - Host side
+lower - Device side
+(In Parenthsis)* - Can happen multiple times
+ZLP - Zero Length Data Packet
+
+
+SETUP - DATA - ack - (IN  - data)* - ACK - OUT - ZLP - ack
+                   - (OUT - DATA)* - ack - IN  - zlp - ACK
+
+
+OUT - DATA - ack
+
+
+
+****************
+** Examples
+****************
+Device - GET_STATUS
+	SETUP Token
+	DATA0 - 0x80 - 0x00 - 0x0000 - 0x0000 - 0x0002
+		Request Type - Request - Value - Index - Return Data Length
+	ack Token
+	IN Token
+	data0 - 0x0000
+		bit 15-2 = Reserved - bit 1 = Remote Wakup - bit0 = Self Powered
+	ACK Token
+	OUT Token
+	ZLP
+	ack Token
+	
+
+Device - CLEAR_FEATURE
+	SETUP Token
+	DATA0 - 0x00 - 0x01 - 0x???? - 0x0000 - 0x0000
+		RequestType - Request - Feature - Index - Length
+	ack Token
+	OUT Token // Not sure if needed since there is 0 data to send
+	ZLP
+	ack Token
+	IN Token
+	zlp
+	ACK Token
+
+Device - SET_FEATURE
+	SETUP Token
+        DATA0 - 0x00 - 0x03 - 0x???? - 0x0000 - 0x0000
+                RequestType - Request - Feature - Index - Length
+        ack Token
+        OUT Token // Not sure if needed since there is 0 data to send
+        ZLP
+        ack Token
+        IN Token
+        zlp
+        ACK Token
+
+Device - SET_ADDRESS
+        SETUP Token
+        DATA0 - 0x00 - 0x05 - 0x???? - 0x0000 - 0x0000
+                RequestType - Request - Address - Index - Length
+        ack Token
+        OUT Token // Not sure if needed since there is 0 data to send
+        ZLP
+        ack Token
+        IN Token
+        zlp
+        ACK Token
+
+Device - GET_DESCRIPTOR - Device Descriptor
+        SETUP Token
+        DATA0 - 0x80 - 0x06 - 0x0100 - 0x0000 - 0x0012
+                Request Type - Request - Descriptor Type and Index - Index - Length (18 bytes)
+        ack Token
+        IN Token
+        data0
+		0x12 - Length of Descriptor (18 bytes)
+		0x01 - Descriptor TYpe (Device Descriptor)
+		0x0110 - USB Spec Version (USB 1.1)
+		0x00 - USB Deivce class (look up on USB.org)
+		0x00 - USB Device SubClass (Look up on USB.org)
+		0x00 - USB Protocol Code (Look up on USB.org)
+		0x40 - Max Packet Size (64 bytes)
+		0xBEAD - Vendor ID (Get a Unique one)
+		0x0000 - Produce ID (ANything)
+		0x0000 - Device Realease Number (Anything)
+		0x00 - Manufacturer String Index
+		0x01 - Product String Index
+		0x02 - Serial Number Index
+		0x01 - Number of Configurations ( 1)
+        ACK Token
+        OUT Token
+        ZLP
+        ack Token
+
+Device - GET_DESCRIPTOR - Configuration Descriptor
+        SETUP Token
+        DATA0 - 0x80 - 0x06 - 0x0201 - 0x0000 - 0x0009
+                Request Type - Request - Descriptor Type and Index - Index - Length (9 bytes)
+        ack Token
+        IN Token
+        data0
+		**** For configuration descriptrs, the entire heiarchy is returned
+		*** Configuration 0 ***
+                0x?? - Length of Descriptor (?? bytes)
+                0x02 - Descriptor TYpe (Configuration Descriptor)
+		0x???? - Total Length ???
+                0x01 - Number of Interfaces
+		0x00 - Configuration Number
+		0x03 - COnfiguration String Index
+		0x00 - Attributes - Buss Powered and No remote wakeup
+		0x00 - Max Power 0x32 -  (50)*(2mA) = 100 mA
+		*** Interface 0 ***
+		0x09 - Length of Descriptor (9 bytes)
+		0x04 - Descriptor Type (Interface)
+		0x00 - Interface Number
+		0x00 - Alternate Settings
+		0x02 - Number of Endpoints
+		0x00 - Interface Class
+		0x00 - Interface SubClass
+		0x00 - Interface Protocol
+		0x04 - String Index
+		*** Endpoint 0 ***
+		*** Endpoint 1 ***
+
+        ACK Token
+        OUT Token 
+        ZLP 
+        ack Token
+
