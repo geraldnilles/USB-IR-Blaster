@@ -4,53 +4,6 @@
 #include <avr/io.h>
 
 
-enum next_out {
-	LED_COMMAND,
-	ENDPOINT_DESCRIPTOR,
-	INTERFACE_DESCRIPTOR,
-	STRING_DESCRIPTOR,
-	ZERO_LENGTH_PACKET
-}
-enum next_in {
-	GET_STATUS,
-	ZERO_LENGTH_PACKET,
-	ENDPOINT_DESCRIPTOR,
-	INTERFACE_DESCRIPTOR,
-	STRING_DESCRIPTOR_0,
-	STRING_DESCRIPTOR_1,
-	STRING_DESCRIPTOR_2
-}
-
-struct setup_packet{
-	char bmRequestType;
-	char bRequest;
-	short wValue;
-	short wIndex;
-	short wLength;
-}
-
-struct string_descriptor{
-	char * string;
-	char size;
-	char type = 0x03
-}
-
-// Create an array of string_descriptors
-struct string_descriptor [5] = string_array;
-
-enum string_index{
-	MANUFACTURER,
-	PRODUCT,
-	SERIALNUMBER,
-	CONFIGURATION,
-	INTERFACE,
-}
-
-string_array[MANUFACTURER].string = L"GERALD";
-string_array[MANUFACTURER].size = 8;
-// Repeat for each string_index 
-
-
 int main(){
 	// Setup Registers
 	// Set USB Interrupts
@@ -93,6 +46,7 @@ void INTERRUPT_RXSTPI(){ // A SETUP Packet was received
 			break;
 		case 7: // SET_DESCRIPTOR ... Descriptor is being sent to device
 			// Prepare for next OUT packet to describe the descriptor described here
+			// THis is not required so we will just ignore the next outpacket
 			break;
 		case 8: // GET_CONFIGURATION
 			// Set the IN packet to be the Configuration Value
@@ -120,11 +74,17 @@ void interrupt_RXOUTI(){ // An Out packet was received
 void interrupt_TXINI(){ // An IN packet was received
 	if(ENDPOINT == 0){ // Control Endpoint Selected
 		switch(next_in){
-			case GET_STATUS:
-
+			case GET_STATUS_DEVICE:
+				UEADAT0 = 0x00;
+				UEADAT0 = 0x00;
+			case GET_STATUS_INTERFACE:
+				UEADAT0 = 0x00;
+				UEADAT0 = 0x00;
 			case ZERO_LENGTH_PACKET:
- 			case ENDPOINT_DESCRIPTOR:
-			case INTERFACE_DESCRIPTOR:
+				break
+			case CONFIGURATION_DESCRIPTOR:
+				UEADAT0 = 0x00;
+				///... 
 			case STRING_DESCRIPTOR_0:
 				UEADAT0 = 0x04; // THis Packet will be 4 bytes
 				UEADAT0 = 0x03; // This is a String Descriptor
