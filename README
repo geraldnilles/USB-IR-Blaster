@@ -1,8 +1,7 @@
+I would like to control my home theater equipment with my computers.  This currently can be done with a wide variety of IR blasters on the market.  The problem is that these IR blasters are expensive.  A circuit that can flash an IR LED at 37kHz should not be $20, it should be $5.   
 
-THe ability to control media devices with a computer is very powerful.
+Looking around, i have decided this can be done using the Atmel ATMega8U2 microcontroler.  This MCU is very similar to the other 8bit Atmel MCUs.  the major difference is that it has a hardware USB interface.  This is basically a shift register and interrupt source.  This will handle all of the timing.
 
-This can let programs like XBMC turn off the TV during shutdown, or adjust the volume with an iPhone app.
+Unforunately, the rest of the USB stack must be implemented in software.  It wont be simple, but i think it is definately possible.  
 
-THere are many IR blaster solutions out there, but they are over $20.  Using the ATMega8U2 MCU, it should be possible to create a USB IR blaster for around $10.
-
-The biggest negative is that this IC only comes in surface mount so a PCB will have to be made.
+On the computer side, a custom kernel driver must be written.  THis driver will act as a file.  When "1" is written to the file, the pulse wave starts.  When a 0 is written, the pulse wave stops.  
