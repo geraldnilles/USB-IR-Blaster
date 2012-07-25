@@ -34,6 +34,15 @@ Device - GET_STATUS
 	ZLP
 	ack Token
 	
+DATA0 Packet
+<table>
+	<tr>
+		<td>0x80</td> <td>0x00</td>
+	</tr>
+	<tr>
+		<td>Request Type</td> <td>Request</td>
+	</tr>
+</table>
 
 Device - CLEAR_FEATURE
 	SETUP Token
