@@ -1,4 +1,3 @@
-
 This file will list all this shit my MCU code needs to support
 
 
@@ -11,15 +10,14 @@ lower - Device side
 (In Parenthsis)* - Can happen multiple times
 ZLP - Zero Length Data Packet
 
-
+<pre>
 SETUP - DATA - ack - (IN  - data)* - ACK - OUT - ZLP - ack
                    - (OUT - DATA)* - ack - IN  - zlp - ACK
 
-
 OUT - DATA - ack
 
-
-
+IN - data - ACK
+</pre>
 
 ## Examples
 
