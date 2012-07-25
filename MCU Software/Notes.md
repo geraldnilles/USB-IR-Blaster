@@ -1,8 +1,11 @@
+
 This file will list all this shit my MCU code needs to support
 
-****************
-** Transactions
-****************
+
+## Transactions
+
+USB Transactions will be documented as shown below
+
 CAPITAL - Host side
 lower - Device side
 (In Parenthsis)* - Can happen multiple times
@@ -17,9 +20,9 @@ OUT - DATA - ack
 
 
 
-****************
-** Examples
-****************
+
+## Examples
+
 Device - GET_STATUS
 	SETUP Token
 	DATA0 - 0x80 - 0x00 - 0x0000 - 0x0000 - 0x0002
